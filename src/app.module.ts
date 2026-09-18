@@ -7,6 +7,10 @@ import { AppService } from './app.service.js';
 import { DocumentModule } from './document/document.module.js';
 import { DocumentEntity } from './document/entities/document.entity.js';
 import { DocumentReviewEntity } from './document/entities/document-review.entity.js';
+import { AuthModule } from './auth/auth.module.js';
+import { UserEntity } from './user/entities/user.entity.js';
+import { RoleEntity } from './user/entities/role.entity.js';
+import { UserRoleEntity } from './user/entities/user-role.entity.js';
 import { MqModule } from './mq/mq.module.js';
 import { PipelineModule } from './pipeline/pipeline.module.js';
 import { StorageModule } from './storage/storage.module.js';
@@ -26,7 +30,13 @@ import { StorageModule } from './storage/storage.module.js';
         username: config.get<string>('POSTGRES_USER', 'user'),
         password: config.get<string>('POSTGRES_PASSWORD', '123456'),
         database: config.get<string>('POSTGRES_DB', 'knowledge_hub'),
-        entities: [DocumentEntity, DocumentReviewEntity],
+        entities: [
+          DocumentEntity,
+          DocumentReviewEntity,
+          UserEntity,
+          RoleEntity,
+          UserRoleEntity,
+        ],
         synchronize: false,
       }),
     }),
@@ -40,6 +50,7 @@ import { StorageModule } from './storage/storage.module.js';
       }),
     }),
     DocumentModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
