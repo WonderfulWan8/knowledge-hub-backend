@@ -1,18 +1,24 @@
-import SnowflakeId from 'snowflake-id';
+import snowflakeIdModule from 'snowflake-id';
 
-type SnowflakeConstructor = new (options?: {
+type SnowflakeIdOptions = {
   mid?: number;
   offset?: number;
-}) => {
+};
+
+type SnowflakeIdGenerator = {
   generate(): string;
 };
 
-// snowflake-id 是 CommonJS 包，在 ESM 下默认导出会包在 .default 中。
-const Snowflake = (
-  SnowflakeId as unknown as { default: SnowflakeConstructor }
+type SnowflakeIdConstructor = new (
+  options?: SnowflakeIdOptions,
+) => SnowflakeIdGenerator;
+
+// snowflake-id 是 CommonJS 包，Node ESM 导入后实际结构是 { default: Constructor }。
+const SnowflakeId = (
+  snowflakeIdModule as unknown as { default: SnowflakeIdConstructor }
 ).default;
 
-const snowflake = new Snowflake({
+const snowflake = new SnowflakeId({
   mid: Number(process.env.SNOWFLAKE_WORKER_ID ?? 1),
   offset: Number(process.env.SNOWFLAKE_OFFSET ?? 1704067200000),
 });
