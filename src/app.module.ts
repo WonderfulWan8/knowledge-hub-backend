@@ -6,6 +6,7 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { DocumentModule } from './document/document.module.js';
 import { DocumentEntity } from './document/entities/document.entity.js';
+import { StorageModule } from './storage/storage.module.js';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DocumentEntity } from './document/entities/document.entity.js';
         ),
       }),
     }),
+    StorageModule,
     DocumentModule,
   ],
   controllers: [AppController],
