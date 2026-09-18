@@ -27,8 +27,6 @@ export class ExtractionService {
   /** 单 chunk 最多实体数，防止图爆炸 */
   private readonly maxEntities: number;
   private readonly maxRelations: number;
-  private readonly modelName: string;
-  private readonly baseUrl: string;
   private readonly structuredLlm?: Runnable<
     BaseLanguageModelInput,
     KgExtractionLlmOutput
@@ -53,15 +51,8 @@ export class ExtractionService {
       config.get<string>('MODEL_NAME') ||
       config.get<string>('LLM_MODEL') ||
       'qwen-plus';
-    const timeout = Number(config.get('KG_LLM_TIMEOUT_MS', 180000));
-    const timeoutMs = Number.isFinite(timeout) && timeout > 0 ? timeout : 180000;
-    this.modelName = model;
-    this.baseUrl = baseUrl;
-
-    // Qwen 在 DashScope 兼容接口默认可能输出较长的思考过程。
-    // KG 只需要结构化 JSON，关闭思考可以显著降低单 chunk 延迟，
-    // 同时避免在 60 秒超时前还没有返回结构化结果。
-    const isDashScope = /dashscope\.aliyuncs\.com/i.test(baseUrl);
+    const timeout = Number(config.get('KG_LLM_TIMEOUT_MS', 60000));
+    const timeoutMs = Number.isFinite(timeout) && timeout > 0 ? timeout : 60000;
 
     const llm = new ChatOpenAI({
       apiKey,
@@ -72,18 +63,11 @@ export class ExtractionService {
       // DashScope 走 Chat Completions，不要切 OpenAI Responses API
       useResponsesApi: false,
       configuration: { baseURL: baseUrl },
-      ...(isDashScope
-        ? { modelKwargs: { enable_thinking: false } }
-        : {}),
     });
 
     this.structuredLlm = llm.withStructuredOutput(kgExtractionResultSchema, {
       name: 'extract_knowledge_graph',
     });
-
-    this.logger.log(
-      `KG 抽取模型已初始化：model=${this.modelName}, baseUrl=${this.baseUrl}, timeoutMs=${timeoutMs}, disableThinking=${isDashScope}`,
-    );
   }
 
   /**
@@ -125,19 +109,10 @@ export class ExtractionService {
     const user = `文档标题: ${documentTitle}\n章节: ${heading ?? '无'}\n\n内容:\n${content.slice(0, 4000)}`;
 
     const started = Date.now();
-    let parsed: KgExtractionLlmOutput;
-    try {
-      parsed = await this.structuredLlm.invoke([
-        new SystemMessage(system),
-        new HumanMessage(user),
-      ]);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      this.logger.error(
-        `KG LLM 抽取请求失败：model=${this.modelName}, elapsed=${Date.now() - started}ms, error=${message}`,
-      );
-      throw error;
-    }
+    const parsed = await this.structuredLlm.invoke([
+      new SystemMessage(system),
+      new HumanMessage(user),
+    ]);
     this.logger.log(
       `KG 抽取完成：title=${documentTitle}, elapsed=${Date.now() - started}ms, chars=${content.length}, entities=${parsed.entities?.length ?? 0}`,
     );
