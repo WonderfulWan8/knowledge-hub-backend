@@ -6,11 +6,16 @@ import { AppController } from './app.controller.js';
 import { AppService } from './app.service.js';
 import { DocumentModule } from './document/document.module.js';
 import { DocumentEntity } from './document/entities/document.entity.js';
+import { MqModule } from './mq/mq.module.js';
+import { PipelineModule } from './pipeline/pipeline.module.js';
 import { StorageModule } from './storage/storage.module.js';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
+    PipelineModule,
+    MqModule,
+    StorageModule,
     TypeOrmModule.forRootAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({
@@ -33,7 +38,6 @@ import { StorageModule } from './storage/storage.module.js';
         ),
       }),
     }),
-    StorageModule,
     DocumentModule,
   ],
   controllers: [AppController],

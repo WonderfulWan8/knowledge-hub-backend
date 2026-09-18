@@ -21,6 +21,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1090.0",
+    "@elastic/elasticsearch": "^8.19.2",
+    "@langchain/openai": "^1.5.13",
+    "@langchain/textsplitters": "^1.0.1",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^12.0.0",
     "@nestjs/core": "^11.0.1",
@@ -28,7 +32,8 @@
     "@nestjs/mongoose": "^12.0.0",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/typeorm": "^12.0.1",
-    "@aws-sdk/client-s3": "^3.1090.0",
+    "amqp-connection-manager": "^5.0.0",
+    "amqplib": "^2.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
     "exceljs": "^4.4.0",
@@ -37,8 +42,8 @@
     "mongoose": "^9.10.1",
     "multer": "^2.2.0",
     "officeparser": "^7.3.0",
-    "pg": "^8.23.0",
     "pdf-parse": "^2.4.5",
+    "pg": "^8.23.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
     "snowflake-id": "^1.1.0",
@@ -52,6 +57,7 @@
     "@nestjs/cli": "^11.0.0",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.0.1",
+    "@types/amqplib": "^0.10.8",
     "@types/express": "^5.0.0",
     "@types/jest": "^30.0.0",
     "@types/multer": "^2.2.0",
@@ -90,7 +96,9 @@
         }
       ]
     },
-    "extensionsToTreatAsEsm": [".ts"],
+    "extensionsToTreatAsEsm": [
+      ".ts"
+    ],
     "moduleNameMapper": {
       "^(\\.{1,2}/.*)\\.js$": "$1"
     },
