@@ -13,16 +13,22 @@ import { QueryUserDto } from './dto/query-user.dto.js';
 import { CreateUserDto } from './dto/create-user.dto.js';
 import { UpdateUserDto } from './dto/update-user.dto.js';
 import { AssignRolesDto } from './dto/assign-roles.dto.js';
+import { AssignPermissionIdsDto } from './dto/permission.dto.js';
 import { UpdateProfileDto } from './dto/profile.dto.js';
 import { ChangePasswordDto, ResetPasswordDto } from './dto/password.dto.js';
+import { PermissionService } from './permission.service.js';
 import { Roles } from '../auth/decorators/roles.decorator.js';
+import { RequirePermission } from '../auth/decorators/require-permission.decorator.js';
 import { CurrentUser } from '../auth/decorators/current-user.decorator.js';
 import { RoleCode } from '../common/constants/roles.js';
 import type { AuthUser } from '../auth/auth-user.interface.js';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly permissionService: PermissionService,
+  ) {}
 
   @Put('me')
   updateMe(@CurrentUser() user: AuthUser, @Body() dto: UpdateProfileDto) {
@@ -98,8 +104,36 @@ export class UserController {
 
   @Put(':id/roles')
   @Roles(RoleCode.ADMIN)
+  @RequirePermission('system:user')
   async assignRoles(@Param('id') id: string, @Body() dto: AssignRolesDto) {
     const roleCodes = await this.userService.replaceRoles(id, dto.roleCodes);
     return { userId: id, roleCodes };
+  }
+
+  @Get(':id/permissions')
+  @Roles(RoleCode.ADMIN)
+  @RequirePermission('system:user')
+  async getUserPermissions(@Param('id') id: string) {
+    await this.userService.findByIdOrThrow(id);
+    const permissionCodes =
+      await this.permissionService.getUserPermissionCodes(id);
+    const permissionIds =
+      await this.permissionService.getUserDirectPermissionIds(id);
+    return { userId: id, permissionCodes, directPermissionIds: permissionIds };
+  }
+
+  @Put(':id/permissions')
+  @Roles(RoleCode.ADMIN)
+  @RequirePermission('system:user')
+  async assignUserPermissions(
+    @Param('id') id: string,
+    @Body() dto: AssignPermissionIdsDto,
+  ) {
+    await this.userService.findByIdOrThrow(id);
+    const permissionIds = await this.permissionService.assignUserPermissions(
+      id,
+      dto,
+    );
+    return { userId: id, permissionIds };
   }
 }

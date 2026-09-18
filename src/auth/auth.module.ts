@@ -12,6 +12,7 @@ import { PasswordResetService } from './password-reset.service.js';
 import { JwtStrategy } from './jwt.strategy.js';
 import { JwtAuthGuard } from './jwt-auth.guard.js';
 import { RolesGuard } from './roles.guard.js';
+import { PermissionsGuard } from './permissions.guard.js';
 import { UserModule } from '../user/user.module.js';
 
 @Module({
@@ -41,6 +42,10 @@ import { UserModule } from '../user/user.module.js';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: PermissionsGuard,
     },
   ],
   exports: [AuthService, UserModule],
