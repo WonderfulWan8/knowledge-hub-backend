@@ -7,6 +7,7 @@ import {
 import { ChunkingService } from './chunking.service.js';
 import { EmbeddingService } from './embedding.service.js';
 import { PipelineOrchestrator } from './pipeline.orchestrator.js';
+import { SearchIndexService } from './search-index.service.js';
 import { VectorIndexService } from './vector-index.service.js';
 
 @Module({
@@ -19,8 +20,9 @@ import { VectorIndexService } from './vector-index.service.js';
     ChunkingService,
     EmbeddingService,
     VectorIndexService,
+    SearchIndexService,
     PipelineOrchestrator,
   ],
-  exports: [PipelineOrchestrator, VectorIndexService],
+  exports: [PipelineOrchestrator, VectorIndexService, SearchIndexService],
 })
 export class PipelineModule {}
