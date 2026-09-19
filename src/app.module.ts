@@ -23,7 +23,10 @@ import { MqModule } from './mq/mq.module.js';
 import { PipelineModule } from './pipeline/pipeline.module.js';
 import { StorageModule } from './storage/storage.module.js';
 import { SearchModule } from './search/search.module.js';
+import { AiModule } from './ai/ai.module.js';
 import { GraphModule } from './graph/graph.module.js';
+import { AiSessionEntity } from './ai/entities/ai-session.entity.js';
+import { AiMessageEntity } from './ai/entities/ai-message.entity.js';
 
 @Module({
   imports: [
@@ -69,6 +72,8 @@ import { GraphModule } from './graph/graph.module.js';
           UserPermissionEntity,
           TeamEntity,
           TeamMemberEntity,
+          AiSessionEntity,
+          AiMessageEntity,
         ],
         synchronize: false,
       }),
@@ -86,6 +91,7 @@ import { GraphModule } from './graph/graph.module.js';
     AuthModule,
     TeamModule,
     SearchModule,
+    AiModule,
     GraphModule,
   ],
   controllers: [AppController],
