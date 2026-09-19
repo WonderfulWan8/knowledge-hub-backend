@@ -22,6 +22,8 @@ import { RedisModule } from './redis/redis.module.js';
 import { MqModule } from './mq/mq.module.js';
 import { PipelineModule } from './pipeline/pipeline.module.js';
 import { StorageModule } from './storage/storage.module.js';
+import { SearchModule } from './search/search.module.js';
+import { GraphModule } from './graph/graph.module.js';
 
 @Module({
   imports: [
@@ -83,6 +85,8 @@ import { StorageModule } from './storage/storage.module.js';
     DocumentModule,
     AuthModule,
     TeamModule,
+    SearchModule,
+    GraphModule,
   ],
   controllers: [AppController],
   providers: [AppService],

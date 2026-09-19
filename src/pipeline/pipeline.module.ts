@@ -32,6 +32,7 @@ import { VectorIndexService } from './vector-index.service.js';
     VectorIndexService,
     SearchIndexService,
     GraphBuildService,
+    EmbeddingService,
   ],
 })
 export class PipelineModule {}
